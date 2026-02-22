@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 
 namespace Homework_Module_4_Function.Task4_Personnel_accounting;
@@ -100,8 +99,10 @@ public class PersonnelAccounting
         
         Console.Write("Введите Фамилию сотрудника: ");
         newFullName.Append(Console.ReadLine() + " ");
+        
         Console.Write("Введите Имя сотрудника: ");
         newFullName.Append(Console.ReadLine() + " ");
+        
         Console.Write("Введите Отчество сотрудника: ");
         newFullName.Append(Console.ReadLine());
 
@@ -190,8 +191,8 @@ public class PersonnelAccounting
 
                     if (deleteNumber <  fullName.Length)
                     {
-                        (fullName[deleteNumber], fullName[fullName.Length - 1]) = (fullName[fullName.Length - 1], fullName[deleteNumber]);
-                        (job[deleteNumber], job[job.Length - 1]) = (job[job.Length - 1], job[deleteNumber]);
+                        (fullName[deleteNumber], fullName[^1]) = (fullName[^1], fullName[deleteNumber]);
+                        (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
                     }
                     
                     for (int i =  0; i < fullName.Length - 1; i++)

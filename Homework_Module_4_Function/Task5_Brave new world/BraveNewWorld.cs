@@ -7,9 +7,7 @@ public class BraveNewWorld
         //Сделать игровую карту с помощью двумерного массива. Сделать функцию показа карты в консоли.
         //Помимо этого, дать пользователю возможность перемещаться по карте
         //и взаимодействовать с элементами (например пользователь не может пройти сквозь стену)
-
         //Все элементы являются обычными символами
-
         //Не используйте Task.Run
             
         Console.CursorVisible = false;
@@ -22,17 +20,18 @@ public class BraveNewWorld
         int mine = -1;
         int mineQuantity = 10;
         
-        string restart = "y";
+        bool restart = true;
         
-        while (restart == "y")
+        while (restart)
         {
             int[,] minefield = CreateMinefield(ref minefieldX, ref minefieldY, ref mine, ref mineQuantity, ref random);
             
             char[,] map = GetMap(minefieldX + 2, minefieldY + 2);
 
             DrawLegend(ref minefieldY, ref mineQuantity);
-            
-            int userX = 1, userY = 1;
+
+            int userX = 1;
+            int userY = 1;
             int countMine = 0;
 
             bool isWorking = true;
@@ -52,10 +51,7 @@ public class BraveNewWorld
                 HandleInput(ref map, ref userX, ref userY, ref countMine, ref isWorking, ref minefield, ref minefieldX, ref minefieldY, ref mineQuantity, ref mine);
             }
             
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write("Хотите попробовать еще раз (y/n): ");
-            restart = Convert.ToString(Console.ReadLine());
-            Console.ResetColor();
+            Restart(ref restart);
         }
         static char[,] GetMap(int x, int y)
         {
@@ -97,52 +93,50 @@ public class BraveNewWorld
             Console.ResetColor();
         }
 
-        static int[,] CreateMinefield(ref int battlefieldSizeX, ref int battlefieldSizeY, ref int mine, ref int mineQuantity, ref Random random)
+        static int[,] CreateMinefield(ref int minefieldX, ref int minefieldY, ref int mine, ref int mineQuantity, ref Random random)
         {
-            int xMine;
-            int yMine;
+            const int QUANTITY_STEPS_AROUND = 8;
             
-            int[,] battleField = new int[battlefieldSizeX, battlefieldSizeY];
+            int[,] minefield = new int[minefieldX, minefieldY];
             
             int[] aroundX = { -1, -1, -1, 0, 1, 1, 1, 0 };
             int[] aroundY = { -1, 0, 1, 1, 1, 0, -1, -1 };
-            int quantityStepsAround = 8;
             
-            for (int mineIndex = 0; mineIndex < mineQuantity; mineIndex++)
+            for (int i = 0; i < mineQuantity; i++)
             {
-                xMine = random.Next(0, battlefieldSizeX);
-                yMine = random.Next(0, battlefieldSizeY);
-                battleField[xMine, yMine] = mine;
+                int xMine = random.Next(0, minefieldX);
+                int yMine = random.Next(0, minefieldY);
+                minefield[xMine, yMine] = mine;
             }
 
-            for (int battleFieldX = 0; battleFieldX < battlefieldSizeX; battleFieldX++)
+            for (int x = 0; x < minefieldX; x++)
             {
-                for (int battleFieldY = 0; battleFieldY < battlefieldSizeY; battleFieldY++)
+                for (int y = 0; y < minefieldY; y++)
                 {
-                    if (battleField[battleFieldX, battleFieldY] == mine)
+                    if (minefield[x, y] == mine)
                         continue;
 
                     int count = 0;
 
-                    for (int stepAround = 0; stepAround < quantityStepsAround; stepAround++)
+                    for (int i = 0; i < QUANTITY_STEPS_AROUND; i++)
                     {
-                        int newX = battleFieldX + aroundX[stepAround];
-                        int newY = battleFieldY + aroundY[stepAround];
+                        int newX = x + aroundX[i];
+                        int newY = y + aroundY[i];
 
-                        if (newX >= 0 && newX < battlefieldSizeX && newY >= 0 && newY < battlefieldSizeY)
+                        if (newX >= 0 && newX < minefieldX && newY >= 0 && newY < minefieldY)
                         {
-                            if (battleField[newX, newY] == mine)
+                            if (minefield[newX, newY] == mine)
                             {
                                 count++;
                             }
                         }
                     }
 
-                    battleField[battleFieldX, battleFieldY] = count;
+                    minefield[x, y] = count;
                 }
             }
             
-            return battleField;
+            return minefield;
         }
 
         static void DrawLegend(ref int battlefieldSizeY, ref int mineQuantity)
@@ -277,6 +271,32 @@ public class BraveNewWorld
                         }
                         break;
                 }
+        }
+
+        static void Restart(ref bool restart)
+        {
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("Хотите попробовать еще раз (Y/N): ");
+            Console.ResetColor();
+            ConsoleKeyInfo charKey = Console.ReadKey();
+            
+            switch (charKey.Key)
+            {
+                case ConsoleKey.Y:
+                    restart = true;
+                    break;
+
+                case ConsoleKey.N:
+                    Console.Clear();
+                    restart = false;
+                    break;
+                
+                default:
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("Нажмите Y или N!");
+                    Console.ResetColor();
+                    break;
+            }
         }
     }
 }

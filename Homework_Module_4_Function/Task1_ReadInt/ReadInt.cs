@@ -12,13 +12,11 @@ public class ReadInt
 
         int number = 0;
         
-        string userInput = " ";
-        
         bool isWorking = true;
 
         while (isWorking)
         {
-            GetUserInput(ref userInput);
+            string userInput = GetUserInput();
             
             ConvertToInt(userInput, ref number, ref isWorking);
         }
@@ -26,12 +24,12 @@ public class ReadInt
         Console.Write($"Введенное число: {number}");
     }
     
-    static void GetUserInput(ref string userInput)
+    static string GetUserInput()
     {
         Console.Write("Введите целое число:");
         string input = Console.ReadLine();
         
-        userInput = input;
+        return input;
     }
     
     static void ConvertToInt(string userInput, ref int number, ref bool isWorking)
