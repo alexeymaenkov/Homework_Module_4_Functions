@@ -10,6 +10,43 @@ public class ReadInt
         //P.S. Задача решается с помощью циклов
         //P.S. Также в TryParse используется модификатор параметра out
 
+        int number = 0;
+        
+        string userInput = " ";
+        
+        bool isWorking = true;
 
+        while (isWorking)
+        {
+            GetUserInput(ref userInput);
+            
+            ConvertToInt(userInput, ref number, ref isWorking);
+        }
+        
+        Console.Write($"Введенное число: {number}");
+    }
+    
+    static void GetUserInput(ref string userInput)
+    {
+        Console.Write("Введите целое число:");
+        string input = Console.ReadLine();
+        
+        userInput = input;
+    }
+    
+    static void ConvertToInt(string userInput, ref int number, ref bool isWorking)
+    {
+        if (int.TryParse(userInput, out int userNumber))
+        {
+            number = userNumber;
+            isWorking = false;
+        }
+        else
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Ошибка ввода! Попробуйте еще раз:");
+            Console.ResetColor();
+        }
     }
 }
