@@ -22,13 +22,11 @@ public class PersonnelAccounting
         5) выход 
             Не используйте Array.Resize   */
 
-        const int COMMAND_ADD_DOSSIER = 1;
-        const int COMMAND_SHOW_ALL_DOSSIERS = 2;
-        const int COMMAND_DELETE_DOSSIER = 3;
-        const int COMMAND_FINDE_BY_SURNAME = 4;
-        const int COMMAND_EXIT = 5;
-        
-        //int command = 0;
+        const string COMMAND_ADD_DOSSIER = "1";
+        const string COMMAND_SHOW_ALL_DOSSIERS = "2";
+        const string COMMAND_DELETE_DOSSIER = "3";
+        const string COMMAND_FINDE_BY_SURNAME = "4";
+        const string COMMAND_EXIT = "5";
         
         string[] fullName = { "Maenkov Alexey Aleksandrovich", "Ivanov Sergey Petrovich", "Pavlov Alexandr Viktorovich"  };
         string[] job = { "Director", "Engineer", "Mechanic" };
@@ -43,12 +41,10 @@ public class PersonnelAccounting
             Console.WriteLine($"{COMMAND_DELETE_DOSSIER} - удалить досье.");
             Console.WriteLine($"{COMMAND_FINDE_BY_SURNAME} - поиск сотрудника по фамилии.");
             Console.WriteLine($"{COMMAND_EXIT} - выход.");
+
+            //string command = GetInput("Введите номер команды: ");
             
-            int command = 0;
-            
-            GetCommand(ref command);
-            
-            switch (command)
+            switch (GetInput("Введите номер команды: "))
             {
                 case COMMAND_ADD_DOSSIER:
                     AddDossier(ref fullName, ref job);
@@ -66,90 +62,68 @@ public class PersonnelAccounting
                     isWorking = false;
                     break;
                 default:
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Ошибка ввода команды! Попробуйте еще раз:");
-                    Console.ResetColor();
+                    OutputError("Ошибка ввода команды! Попробуйте еще раз:");
                     break;
             }
         }
     }
-    
-    static void GetCommand(ref int command)
+    static void OutputSuccess(string message)
     {
-        Console.Write("Введите номер команды: ");
-        string userInput = Console.ReadLine();
-        
-        if (int.TryParse(userInput, out int userNumber))
-        {
-            command = userNumber;
-        }
-        else
-        {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ошибка ввода команды! Попробуйте еще раз:");
-            Console.ResetColor();
-        }
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(message);
+        Console.ResetColor();
     }
-
+    static void OutputError(string message)
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(message);
+        Console.ResetColor();
+    }
+    
+    static string GetInput(string message)
+    {
+        Console.Write(message);
+        return Console.ReadLine().Trim();
+    }
+    
     static void AddDossier(ref string[]  fullName, ref string[] job)
     {
-        StringBuilder newFullName = new ();
+        string newFullName = GetInput("Введите ФИО сотрудника: ");
         
-        Console.Write("Введите Фамилию сотрудника: ");
-        newFullName.Append(Console.ReadLine() + " ");
-        
-        Console.Write("Введите Имя сотрудника: ");
-        newFullName.Append(Console.ReadLine() + " ");
-        
-        Console.Write("Введите Отчество сотрудника: ");
-        newFullName.Append(Console.ReadLine());
-
-        Console.Write("Введите должность сотрудника: ");
-        string newJob = Console.ReadLine();
-
-        if (string.IsNullOrWhiteSpace(newFullName.ToString()))
+        if (string.IsNullOrWhiteSpace(newFullName))
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ошибка! Не верный ввод ФИО сотрудника.\n");
-            Console.ResetColor();
+            OutputError("Ошибка! Не верный ввод ФИО сотрудника.\n");
             return;
         }
+        
+        string newJob = GetInput("Введите должность сотрудника: ");
 
         if (string.IsNullOrWhiteSpace(newJob))
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ошибка! Не верный ввод должности сотрудника.\n");
-            Console.ResetColor();
+            OutputError("Ошибка! Не верный ввод должности сотрудника.\n");
             return;
         }
         
-        string[] tempFullName = new string[fullName.Length + 1];
-        string[] tempJob = new string[job.Length + 1];
+        Resize(ref fullName, ref newFullName);
         
-        for (int i =  0; i < fullName.Length; i++)
+        Resize(ref job, ref newJob);
+        
+        OutputSuccess("Сотрудник успешно добавлен.\n");
+    }
+
+    static void Resize(ref string[] array, ref string newElement)
+    {
+        string[] tempArray = new string[array.Length + 1];
+        
+        for (int i =  0; i < array.Length; i++)
         {
-            tempFullName[i] = fullName[i];
+            tempArray[i] = array[i];
         }
         
-        tempFullName[^1] = newFullName.ToString();
-        fullName = tempFullName;
-        
-        for (int i =  0; i < job.Length; i++)
-        {
-            tempJob[i] = job[i];
-        }
-        
-        tempJob[^1] = newJob;
-        job = tempJob;
-        
-        Console.Clear();
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Сотрудник успешно добавлен.\n");
-        Console.ResetColor();
+        tempArray[^1] = newElement;
+        array = tempArray;
     }
 
     static void ShowAllDossiers(ref string[] fullName, ref string[] job)
@@ -171,19 +145,60 @@ public class PersonnelAccounting
     {
         if (fullName.Length == 0)
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("База Досье Пуста!\n");
-            Console.ResetColor();
+            OutputError("База Досье Пуста!\n");
         }
         else
         {
-            Console.Write("\nВведите порядковый номер досье, которое нужно удалить: ");
-            string userInput = Console.ReadLine();
+            //string userInput = GetInput("\nВведите порядковый номер досье, которое нужно удалить: ");
             
-            if (int.TryParse(userInput, out int deleteNumber))
+            if (int.TryParse(GetInput("\nВведите порядковый номер досье, которое нужно удалить: "), out int deleteNumber))
             {
                 deleteNumber--;
+                
+                if (deleteNumber >= 0 && deleteNumber <= fullName.Length)
+                {
+                    
+                    
+                    string[] tempFullName = new string[fullName.Length - 1];
+                    string[] tempJob = new string[job.Length - 1];
+
+                    if (deleteNumber <  fullName.Length)
+                    {
+                        (fullName[deleteNumber], fullName[^1]) = (fullName[^1], fullName[deleteNumber]);
+                        (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
+                    }
+                    
+                    for (int i =  0; i < fullName.Length - 1; i++)
+                    {
+                        tempFullName[i] = fullName[i];
+                    }
+            
+                    fullName = tempFullName;
+            
+                    for (int i =  0; i < job.Length - 1; i++)
+                    {
+                        tempJob[i] = job[i];
+                    }
+            
+                    job = tempJob;
+                    
+                    OutputSuccess("Сотрудник успешно удален.\n");
+                }
+                else
+                {
+                    OutputError("Ошибка! Такого номера не существует. Попробуйте еще раз:");
+                }
+            }
+            else
+            {
+                OutputError("Ошибка ввода номера! Попробуйте еще раз:");
+            }
+            
+            /*
+            if (int.TryParse(GetInput("\nВведите порядковый номер досье, которое нужно удалить: "), out int deleteNumber))
+            {
+                deleteNumber--;
+                
                 if (deleteNumber >= 0 && deleteNumber <= fullName.Length)
                 {
                     string[] tempFullName = new string[fullName.Length - 1];
@@ -209,26 +224,19 @@ public class PersonnelAccounting
             
                     job = tempJob;
                     
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Сотрудник успешно удален.\n");
-                    Console.ResetColor();
+                    OutputSuccess("Сотрудник успешно удален.\n");
                 }
                 else
                 {
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Ошибка! Такого номера не существует. Попробуйте еще раз:");
-                    Console.ResetColor();
+                    OutputError("Ошибка! Такого номера не существует. Попробуйте еще раз:");
                 }
             }
             else
             {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Ошибка ввода номера! Попробуйте еще раз:");
-                Console.ResetColor();
+                OutputError("Ошибка ввода номера! Попробуйте еще раз:");
             }
+             */
+            
         }
     }
 
@@ -239,10 +247,7 @@ public class PersonnelAccounting
         
         if (string.IsNullOrWhiteSpace(searchedSurname))
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ошибка! Не верный ввод Фамилии сотрудника.\n");
-            Console.ResetColor();
+            OutputError("Ошибка! Не верный ввод Фамилии сотрудника.\n");
             return;
         }
 
@@ -272,17 +277,11 @@ public class PersonnelAccounting
 
         if (index > 0)
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Досье сотрудника по фамилии '{searchedSurname}' находится под номером: {index}\n");
-            Console.ResetColor();
+            OutputSuccess($"Досье сотрудника по фамилии '{searchedSurname}' находится под номером: {index}\n");
         }
         else
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Досье сотрудника по фамилии '{searchedSurname}' не существует.\n");
-            Console.ResetColor();
+            OutputError($"Досье сотрудника по фамилии '{searchedSurname}' не существует.\n");
         }
     }
 }

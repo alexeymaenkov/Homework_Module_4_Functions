@@ -9,35 +9,53 @@ public class ReadInt
         //Полученное число из функции надо в Main вывести в консоль.
         //P.S. Задача решается с помощью циклов
         //P.S. Также в TryParse используется модификатор параметра out
-
+        
+        
+        /*
         int number = 0;
         
         bool isWorking = true;
 
         while (isWorking)
         {
-            string userInput = GetUserInput();
+            string userInput = GetInput("Введите целое число:");
             
-            ConvertToInt(userInput, ref number, ref isWorking);
+            isWorking = TryConvertToInt(userInput, out number);
+        }
+        
+        Console.Write($"Введенное число: {number}");
+        */
+        
+        int number;
+
+        while (true)
+        {
+            string userInput = GetInput("Введите целое число:");
+
+            if (int.TryParse(userInput, out number))
+                break;
+            
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Ошибка ввода! Попробуйте еще раз:");
+            Console.ResetColor();
         }
         
         Console.Write($"Введенное число: {number}");
     }
     
-    static string GetUserInput()
+    static string GetInput(string message)
     {
-        Console.Write("Введите целое число:");
-        string input = Console.ReadLine();
-        
-        return input;
+        Console.Write(message);
+        return Console.ReadLine().Trim();
     }
     
-    static void ConvertToInt(string userInput, ref int number, ref bool isWorking)
+    /*
+    static bool TryConvertToInt(string userInput, out int number)
     {
-        if (int.TryParse(userInput, out int userNumber))
+        if (int.TryParse(userInput, out number))
         {
-            number = userNumber;
-            isWorking = false;
+            return false;
         }
         else
         {
@@ -45,6 +63,10 @@ public class ReadInt
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Ошибка ввода! Попробуйте еще раз:");
             Console.ResetColor();
+
+            number = 0;
+            return true;
         }
     }
+    */
 }

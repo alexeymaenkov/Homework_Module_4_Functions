@@ -19,13 +19,13 @@ class Program
         
         Shuffle shuffle = new();
         shuffle.Run();
-        
+        */
         PersonnelAccounting personnelAccounting = new();
         personnelAccounting.Run();
-        */
+        /*
         BraveNewWorld braveNewWorld = new();
         braveNewWorld.Run();
-        
+        */
     }
 }
 

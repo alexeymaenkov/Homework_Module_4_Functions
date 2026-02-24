@@ -8,9 +8,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d8c5c1ae-9ece-4993-b1aa-ca0a4bd1bc5e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Homework_Module_4_Function/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Homework_Module_4_Function/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Homework_Module_4_Function/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Homework_Module_4_Function/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Homework_Module_4_Function/Task1_ReadInt/ReadInt.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Homework_Module_4_Function/Task1_ReadInt/ReadInt.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Homework_Module_4_Function/Task2_UIElement/UiElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Homework_Module_4_Function/Task2_UIElement/UiElement.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Homework_Module_4_Function/Task4_Personnel accounting/PersonnelAccounting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Homework_Module_4_Function/Task4_Personnel accounting/PersonnelAccounting.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Homework_Module_4_Function/Task5_Brave new world/BraveNewWorld.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Homework_Module_4_Function/Task5_Brave new world/BraveNewWorld.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +112,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1771529111079</updated>
-      <workItem from="1771529114130" duration="54451000" />
+      <workItem from="1771529114130" duration="68442000" />
     </task>
     <task id="LOCAL-00001" summary="innitial commit">
       <option name="closed" value="true" />
@@ -136,7 +138,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771790332618</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="All tasks done">
+      <option name="closed" value="true" />
+      <created>1771798245445</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1771798245445</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,7 +170,8 @@
     <MESSAGE value="innitial commit" />
     <MESSAGE value="All tasks - beta" />
     <MESSAGE value="All tasks - beta (all files)" />
-    <option name="LAST_COMMIT_MESSAGE" value="All tasks - beta (all files)" />
+    <MESSAGE value="All tasks done" />
+    <option name="LAST_COMMIT_MESSAGE" value="All tasks done" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -177,32 +188,6 @@
           <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="3" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Homework_Module_4_Function/Task4_Personnel accounting/PersonnelAccounting.cs</url>
-          <line>235</line>
-          <properties documentPath="S:\RIDER#\Homework_Module_4_Function\Homework_Module_4_Function\Task4_Personnel accounting\PersonnelAccounting.cs" containingFunctionPresentation="Method 'FindDossier'">
-            <startOffsets>
-              <option value="8354" />
-            </startOffsets>
-            <endOffsets>
-              <option value="8355" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Homework_Module_4_Function/Task4_Personnel accounting/PersonnelAccounting.cs</url>
-          <line>285</line>
-          <properties documentPath="S:\RIDER#\Homework_Module_4_Function\Homework_Module_4_Function\Task4_Personnel accounting\PersonnelAccounting.cs" containingFunctionPresentation="Method 'FindDossier'">
-            <startOffsets>
-              <option value="9984" />
-            </startOffsets>
-            <endOffsets>
-              <option value="9985" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
