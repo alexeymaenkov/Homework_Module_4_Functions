@@ -14,11 +14,25 @@ public class BraveNewWorld
         
         Random random = new ();
         
+        const ConsoleKey COMMAND_MOOVE_UP = ConsoleKey.UpArrow;
+        const ConsoleKey COMMAND_MOOVE_DOWN = ConsoleKey.DownArrow;
+        const ConsoleKey COMMAND_MOOVE_LEFT = ConsoleKey.LeftArrow;
+        const ConsoleKey COMMAND_MOOVE_RIGHT = ConsoleKey.RightArrow;
+        const ConsoleKey COMMAND_MARK_MINE = ConsoleKey.Spacebar;
+        const ConsoleKey COMMAND_DETACH_MINE = ConsoleKey.Backspace;
+        const ConsoleKey COMMAND_OPEN_FIELD = ConsoleKey.Enter;
+        const ConsoleKey COMMAND_RESTART = ConsoleKey.Y;
+        const ConsoleKey COMMAND_EXIT = ConsoleKey.N;
+        
         int minefieldX = 10;
         int minefieldY = 10;
         
         int mine = -1;
         int mineQuantity = 10;
+        
+        char border = '#';
+        char field = '*';
+        char possibleMine = '?';
         
         bool restart = true;
         
@@ -26,13 +40,14 @@ public class BraveNewWorld
         {
             int[,] minefield = CreateMinefield(ref minefieldX, ref minefieldY, ref mine, ref mineQuantity, ref random);
             
-            char[,] map = GetMap(minefieldX + 2, minefieldY + 2);
+            char[,] map = GetMap(minefieldX + 2, minefieldY + 2, border, field);
 
             DrawLegend(ref minefieldY, ref mineQuantity);
 
             int userX = 1;
             int userY = 1;
             int countMine = 0;
+            int countWin = 0;
 
             bool isWorking = true;
 
@@ -48,16 +63,73 @@ public class BraveNewWorld
                 Console.SetCursorPosition(minefieldY + 4, 9);
                 Console.WriteLine($"Найдено МИН: {countMine}");
                 
-                HandleInput(ref map, ref userX, ref userY, ref countMine, ref isWorking, ref minefield, ref minefieldX, ref minefieldY, ref mineQuantity, ref mine);
+                int quantityFreeMinefieldСells = (minefieldX * minefieldY) - mineQuantity;
+                
+                ConsoleKeyInfo charKey = Console.ReadKey();
+                
+                switch (charKey.Key)
+                {
+                    case COMMAND_MOOVE_UP:
+                        MovingUser(COMMAND_MOOVE_UP, ref map, ref userX, ref userY, border);
+                        break;
+                    
+                    case COMMAND_MOOVE_DOWN:
+                        MovingUser(COMMAND_MOOVE_DOWN, ref map, ref userX, ref userY, border);
+                        break;
+                    
+                    case COMMAND_MOOVE_LEFT:
+                        MovingUser(COMMAND_MOOVE_LEFT, ref map, ref userX, ref userY, border);
+                        break;
+                    
+                    case COMMAND_MOOVE_RIGHT:
+                        MovingUser(COMMAND_MOOVE_RIGHT, ref map, ref userX, ref userY, border);
+                        break;
+                    
+                    case COMMAND_MARK_MINE:
+                        MarksMine(COMMAND_MARK_MINE, ref map, ref userX, ref userY, ref countMine, field, possibleMine);
+                        break;
+                    
+                    case COMMAND_DETACH_MINE:
+                        MarksMine(COMMAND_DETACH_MINE, ref map, ref userX, ref userY, ref countMine, field, possibleMine);
+                        break;
+                    
+                    case COMMAND_OPEN_FIELD:
+                        if (map[userX, userY] == field)
+                        {
+                            map[userX, userY] = minefield[userX - 1, userY - 1].ToString()[0];
+                            countWin++;
+                        }
+                        if (countWin == quantityFreeMinefieldСells)
+                        {
+                            Console.SetCursorPosition(0, 0);
+                            Console.BackgroundColor = ConsoleColor.DarkGreen;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.WriteLine("!----------ВЫ ВЫГРАЛИ---------!");
+                            isWorking = false;
+                        }
+                        if (minefield[userX - 1, userY - 1] == mine)
+                        {
+                            map[userX, userY] = 'X';
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.SetCursorPosition(userY, userX);
+                            Console.Write("X");
+                            Console.ResetColor();
+                            Console.SetCursorPosition(0, 0);
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.WriteLine("!----------ВЫ ПРОИГАЛИ---------!");
+                            Console.ReadKey();
+                            isWorking = false;
+                        }
+                        break;
+                }
             }
             
             Restart(ref restart);
         }
-        static char[,] GetMap(int x, int y)
+        static char[,] GetMap(int x, int y, char border, char field)
         {
-            char border = '#';
-            char field = '*';
-
             char[,] map = new char[x, y];
 
             for (int mapX = 0; mapX < map.GetLength(0); mapX++)
@@ -160,133 +232,54 @@ public class BraveNewWorld
             Console.ResetColor();
         }
 
-        static void HandleInput(ref char[,] map, ref int userX, ref int userY, ref int countMine, ref bool isWorking, ref int[,] minefield, ref int minefieldX, ref int minefieldY, ref int mineQuantity, ref int mine)
+        static void MovingUser(ConsoleKey key, ref char[,] map, ref int userX, ref int userY, char border)
         {
-            int countWin = 0;
+            if (key == COMMAND_MOOVE_UP)
+                if (map[userX - 1, userY] != border)
+                    userX--;
             
-            ConsoleKeyInfo charKey = Console.ReadKey();
-                
-                switch (charKey.Key)
-                {
-                    case ConsoleKey.UpArrow:
-                        if (map[userX - 1, userY] != '#')
-                        {
-                            userX--;
-                        }
-                        break;
-                    
-                    case ConsoleKey.DownArrow:
-                        if (map[userX + 1, userY] != '#')
-                        {
-                            userX++;
-                        }
-                        break;
-                    
-                    case ConsoleKey.LeftArrow:
-                        if (map[userX, userY - 1] != '#')
-                        {
-                            userY--;
-                        }
-                        break;
-                    
-                    case ConsoleKey.RightArrow:
-                        if (map[userX, userY + 1] != '#')
-                        {
-                            userY++;
-                        }
-                        break;
-                    
-                    case ConsoleKey.Backspace:
-                        map[userX, userY] = '*';
-                        countMine--;
-                        break;
-                    
-                    case ConsoleKey.Spacebar:
-                        map[userX, userY] = '?';
-                        countMine++;
-                        break;
-                    
-                    case ConsoleKey.Enter:
-                        if (map[userX, userY] == '*')
-                        {
-                            countWin++;
-                        }
-                        if (countWin == (minefieldX * minefieldY) - mineQuantity)
-                        {
-                            Console.SetCursorPosition(0, minefieldY + 5);
-                            Console.BackgroundColor = ConsoleColor.DarkGreen;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("!----------ВЫ ВЫГРАЛИ---------!");
-                            isWorking = false;
-                        }
-                        if (minefield[userX - 1, userY - 1] == mine)
-                        {
-                            map[userX, userY] = 'X';
-                            Console.BackgroundColor = ConsoleColor.Red;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.SetCursorPosition(userY, userX);
-                            Console.Write("X");
-                            Console.ResetColor();
-                            Console.SetCursorPosition(0, minefieldY + 5);
-                            Console.BackgroundColor = ConsoleColor.Red;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("!----------ВЫ ПРОИГАЛИ---------!");
-                            isWorking = false;
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 0)
-                        {
-                            map[userX, userY] = '0';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 1)
-                        {
-                            map[userX, userY] = '1';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 2)
-                        {
-                            map[userX, userY] = '2';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 3)
-                        {
-                            map[userX, userY] = '3';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 4)
-                        {
-                            map[userX, userY] = '4';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 5)
-                        {
-                            map[userX, userY] = '5';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 6)
-                        {
-                            map[userX, userY] = '6';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 7)
-                        {
-                            map[userX, userY] = '7';
-                        }
-                        else if (minefield[userX - 1, userY - 1] == 8)
-                        {
-                            map[userX, userY] = '8';
-                        }
-                        break;
-                }
+            if (key == COMMAND_MOOVE_DOWN)
+                if (map[userX + 1, userY] != border)
+                    userX++;
+            
+            if (key == COMMAND_MOOVE_LEFT)
+                if (map[userX, userY - 1] != border)
+                    userY--;
+            
+            if (key == COMMAND_MOOVE_RIGHT)
+                if (map[userX, userY + 1] != border)
+                    userY++;
         }
 
+        static void MarksMine(ConsoleKey key, ref char[,] map, ref int userX, ref int userY, ref int countMine, char field, char possibleMine)
+        {
+            if (key == COMMAND_MARK_MINE)
+            {
+                map[userX, userY] = possibleMine;
+                countMine++;
+            }
+
+            if (key == COMMAND_DETACH_MINE)
+            {
+                map[userX, userY] = field;
+                countMine--;
+            }
+        }
+        
         static void Restart(ref bool restart)
         {
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write("Хотите попробовать еще раз (Y/N): ");
+            Console.Write("Хотите попробовать еще раз (Y/N)?");
             Console.ResetColor();
             ConsoleKeyInfo charKey = Console.ReadKey();
             
             switch (charKey.Key)
             {
-                case ConsoleKey.Y:
+                case COMMAND_RESTART:
                     restart = true;
                     break;
 
-                case ConsoleKey.N:
+                case COMMAND_EXIT:
                     Console.Clear();
                     restart = false;
                     break;

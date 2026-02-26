@@ -42,9 +42,9 @@ public class PersonnelAccounting
             Console.WriteLine($"{COMMAND_FINDE_BY_SURNAME} - поиск сотрудника по фамилии.");
             Console.WriteLine($"{COMMAND_EXIT} - выход.");
 
-            //string command = GetInput("Введите номер команды: ");
+            string userCommand = GetInput("Введите номер команды: ");
             
-            switch (GetInput("Введите номер команды: "))
+            switch (userCommand)
             {
                 case COMMAND_ADD_DOSSIER:
                     AddDossier(ref fullName, ref job);
@@ -146,104 +146,49 @@ public class PersonnelAccounting
         if (fullName.Length == 0)
         {
             OutputError("База Досье Пуста!\n");
+            return;
         }
-        else
+        
+        string userInput = GetInput("\nВведите порядковый номер досье, которое нужно удалить: ");
+
+        if (int.TryParse(userInput, out int deleteNumber) == false)
         {
-            //string userInput = GetInput("\nВведите порядковый номер досье, которое нужно удалить: ");
-            
-            if (int.TryParse(GetInput("\nВведите порядковый номер досье, которое нужно удалить: "), out int deleteNumber))
-            {
-                deleteNumber--;
-                
-                if (deleteNumber >= 0 && deleteNumber <= fullName.Length)
-                {
-                    
-                    
-                    string[] tempFullName = new string[fullName.Length - 1];
-                    string[] tempJob = new string[job.Length - 1];
-
-                    if (deleteNumber <  fullName.Length)
-                    {
-                        (fullName[deleteNumber], fullName[^1]) = (fullName[^1], fullName[deleteNumber]);
-                        (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
-                    }
-                    
-                    for (int i =  0; i < fullName.Length - 1; i++)
-                    {
-                        tempFullName[i] = fullName[i];
-                    }
-            
-                    fullName = tempFullName;
-            
-                    for (int i =  0; i < job.Length - 1; i++)
-                    {
-                        tempJob[i] = job[i];
-                    }
-            
-                    job = tempJob;
-                    
-                    OutputSuccess("Сотрудник успешно удален.\n");
-                }
-                else
-                {
-                    OutputError("Ошибка! Такого номера не существует. Попробуйте еще раз:");
-                }
-            }
-            else
-            {
-                OutputError("Ошибка ввода номера! Попробуйте еще раз:");
-            }
-            
-            /*
-            if (int.TryParse(GetInput("\nВведите порядковый номер досье, которое нужно удалить: "), out int deleteNumber))
-            {
-                deleteNumber--;
-                
-                if (deleteNumber >= 0 && deleteNumber <= fullName.Length)
-                {
-                    string[] tempFullName = new string[fullName.Length - 1];
-                    string[] tempJob = new string[job.Length - 1];
-
-                    if (deleteNumber <  fullName.Length)
-                    {
-                        (fullName[deleteNumber], fullName[^1]) = (fullName[^1], fullName[deleteNumber]);
-                        (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
-                    }
-                    
-                    for (int i =  0; i < fullName.Length - 1; i++)
-                    {
-                        tempFullName[i] = fullName[i];
-                    }
-            
-                    fullName = tempFullName;
-            
-                    for (int i =  0; i < job.Length - 1; i++)
-                    {
-                        tempJob[i] = job[i];
-                    }
-            
-                    job = tempJob;
-                    
-                    OutputSuccess("Сотрудник успешно удален.\n");
-                }
-                else
-                {
-                    OutputError("Ошибка! Такого номера не существует. Попробуйте еще раз:");
-                }
-            }
-            else
-            {
-                OutputError("Ошибка ввода номера! Попробуйте еще раз:");
-            }
-             */
-            
+            OutputError("Ошибка ввода номера! Попробуйте еще раз:");
+            return;
         }
+
+        deleteNumber--;
+
+        if (deleteNumber < 0 && deleteNumber > fullName.Length)
+        {
+            OutputError("Ошибка! Такого номера не существует. Попробуйте еще раз:");
+            return;
+        }
+
+        if (deleteNumber <  fullName.Length)
+        {
+            (fullName[deleteNumber], fullName[^1]) = (fullName[^1], fullName[deleteNumber]);
+            (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
+        }
+        
+        string[] tempFullName = new string[fullName.Length - 1];
+        string[] tempJob = new string[job.Length - 1];
+        
+        for (int i =  0; i < fullName.Length - 1; i++)
+        {
+            tempFullName[i] = fullName[i];
+            tempJob[i] = job[i];
+        }
+
+        fullName = tempFullName;
+        job = tempJob;
+        
+        OutputSuccess("Сотрудник успешно удален!");
     }
 
     static void FindDossier(ref string[] fullName)
     {
-        Console.Write("\nВведите Фамилию сотрудника: ");
-        string searchedSurname = Console.ReadLine();
+        string searchedSurname = GetInput("\nВведите Фамилию сотрудника: ");
         
         if (string.IsNullOrWhiteSpace(searchedSurname))
         {
@@ -258,18 +203,17 @@ public class PersonnelAccounting
         {
             for (int j = 0; j < searchedSurname.Length; j++)
             {
-                if (char.ToLower(searchedSurname[j]) == char.ToLower(fullName[i][j]))
+                if (char.ToLower(searchedSurname[j]) != char.ToLower(fullName[i][j]))
                 {
-                    countSymbols++;
-                    if (countSymbols == searchedSurname.Length)
-                    {
-                        countSymbols = 0;
-                        index = i + 1;
-                        break;
-                    }
+                    break;
                 }
-                else
+
+                countSymbols++;
+                
+                if (countSymbols == searchedSurname.Length)
                 {
+                    countSymbols = 0;
+                    index = i + 1;
                     break;
                 }
             }
