@@ -13,18 +13,18 @@ public class UiElement
         int currentHealth = 11;
         int currentMana = 7;
         
-        DrewHealthBar(currentHealth);
-        DrewManaBar(currentMana);
+        DrawHealthBar(currentHealth);
+        DrawManaBar(currentMana);
     }
 
-    static void DrewHealthBar(int currentHealth)
+    static void DrawHealthBar(int currentHealth)
     {
         const int MAX_HEALTH = 20;
         
         DrawBar(currentHealth, MAX_HEALTH, 0);
     }
     
-    static void DrewManaBar(int currentMana)
+    static void DrawManaBar(int currentMana)
     {
         const int MAX_MANA = 10;
         

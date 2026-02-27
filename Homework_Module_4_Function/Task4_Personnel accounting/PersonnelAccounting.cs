@@ -72,6 +72,7 @@ public class PersonnelAccounting
             }
         }
     }
+    
     static void OutputSuccess(string message)
     {
         Console.Clear();
@@ -79,6 +80,7 @@ public class PersonnelAccounting
         Console.WriteLine(message);
         Console.ResetColor();
     }
+    
     static void OutputError(string message)
     {
         Console.Clear();
@@ -111,16 +113,16 @@ public class PersonnelAccounting
             return;
         }
         
-        Resize(ref fullName, ref newFullName);
+        AddLast(ref fullName, ref newFullName, 1);
         
-        Resize(ref job, ref newJob);
+        AddLast(ref job, ref newJob, 1);
         
         OutputSuccess("Сотрудник успешно добавлен.\n");
     }
 
-    static void Resize(ref string[] array, ref string newElement)
+    static void AddLast(ref string[] array, ref string newElement, int count)
     {
-        string[] tempArray = new string[array.Length + 1];
+        string[] tempArray = new string[array.Length + count];
         
         for (int i =  0; i < array.Length; i++)
         {
@@ -128,6 +130,18 @@ public class PersonnelAccounting
         }
         
         tempArray[^1] = newElement;
+        array = tempArray;
+    }
+
+    static void RemoveLast(ref string[] array, int count)
+    {
+        string[] tempArray = new string[array.Length - count];
+        
+        for (int i = 0; i < array.Length - count; i++)
+        {
+            tempArray[i] = array[i];
+        }
+
         array = tempArray;
     }
 
@@ -170,23 +184,15 @@ public class PersonnelAccounting
             return;
         }
 
-        if (deleteNumber <  fullName.Length)
+        if (deleteNumber < fullName.Length)
         {
             (fullName[deleteNumber], fullName[^1]) = (fullName[^1], fullName[deleteNumber]);
             (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
         }
-        
-        string[] tempFullName = new string[fullName.Length - 1];
-        string[] tempJob = new string[job.Length - 1];
-        
-        for (int i =  0; i < fullName.Length - 1; i++)
-        {
-            tempFullName[i] = fullName[i];
-            tempJob[i] = job[i];
-        }
 
-        fullName = tempFullName;
-        job = tempJob;
+        RemoveLast(ref fullName, 1);
+        
+        RemoveLast(ref job, 1);
         
         OutputSuccess("Сотрудник успешно удален!");
     }

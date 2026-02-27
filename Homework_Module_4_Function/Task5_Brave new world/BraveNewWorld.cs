@@ -16,10 +16,10 @@ public class BraveNewWorld
         
         Random random = new ();
         
-        const ConsoleKey COMMAND_MOOVE_UP = ConsoleKey.UpArrow;
-        const ConsoleKey COMMAND_MOOVE_DOWN = ConsoleKey.DownArrow;
-        const ConsoleKey COMMAND_MOOVE_LEFT = ConsoleKey.LeftArrow;
-        const ConsoleKey COMMAND_MOOVE_RIGHT = ConsoleKey.RightArrow;
+        const ConsoleKey COMMAND_MOVE_UP = ConsoleKey.UpArrow;
+        const ConsoleKey COMMAND_MOVE_DOWN = ConsoleKey.DownArrow;
+        const ConsoleKey COMMAND_MOVE_LEFT = ConsoleKey.LeftArrow;
+        const ConsoleKey COMMAND_MOVE_RIGHT = ConsoleKey.RightArrow;
         const ConsoleKey COMMAND_MARK_MINE = ConsoleKey.Spacebar;
         const ConsoleKey COMMAND_DETACH_MINE = ConsoleKey.Backspace;
         const ConsoleKey COMMAND_OPEN_FIELD = ConsoleKey.Enter;
@@ -33,6 +33,7 @@ public class BraveNewWorld
         int quantityFreeMinefieldСells = minefieldX * minefieldY - mineQuantity;
         int mapX = minefieldX + 2;
         int mapY = minefieldY + 2;
+        int cursorShiftLeft = 4;
         
         char border = '#';
         char field = '*';
@@ -46,8 +47,6 @@ public class BraveNewWorld
             
             char[,] map = CreateMap(ref mapX, ref mapY, ref border, ref field);
 
-            DrawLegend(ref minefieldY, ref mineQuantity);
-
             int userX = 1;
             int userY = 1;
             int countMine = 0;
@@ -58,42 +57,41 @@ public class BraveNewWorld
 
             while (isWorking)
             {
+                DrawLegend(ref minefieldY, ref mineQuantity, ref cursorShiftLeft, ref countMine, ref countWin);
+                
                 DrawMap(map);
 
                 Console.BackgroundColor = ConsoleColor.DarkGreen;
                 Console.SetCursorPosition(userY, userX);
                 Console.Write(" ");
                 Console.ResetColor();
-
-                Console.SetCursorPosition(minefieldY + 4, 9);
-                Console.WriteLine($"Найдено МИН: {countMine} + счет {countWin}");
                 
                 ConsoleKeyInfo charKey = Console.ReadKey();
                 
                 switch (charKey.Key)
                 {
-                    case COMMAND_MOOVE_UP:
-                        MovingUser(COMMAND_MOOVE_UP, ref map, ref userX, ref userY, border);
+                    case COMMAND_MOVE_UP:
+                        MovingUser(COMMAND_MOVE_UP, ref map, ref userX, ref userY, border);
                         break;
                     
-                    case COMMAND_MOOVE_DOWN:
-                        MovingUser(COMMAND_MOOVE_DOWN, ref map, ref userX, ref userY, border);
+                    case COMMAND_MOVE_DOWN:
+                        MovingUser(COMMAND_MOVE_DOWN, ref map, ref userX, ref userY, border);
                         break;
                     
-                    case COMMAND_MOOVE_LEFT:
-                        MovingUser(COMMAND_MOOVE_LEFT, ref map, ref userX, ref userY, border);
+                    case COMMAND_MOVE_LEFT:
+                        MovingUser(COMMAND_MOVE_LEFT, ref map, ref userX, ref userY, border);
                         break;
                     
-                    case COMMAND_MOOVE_RIGHT:
-                        MovingUser(COMMAND_MOOVE_RIGHT, ref map, ref userX, ref userY, border);
+                    case COMMAND_MOVE_RIGHT:
+                        MovingUser(COMMAND_MOVE_RIGHT, ref map, ref userX, ref userY, border);
                         break;
                     
                     case COMMAND_MARK_MINE:
-                        MarksMine(COMMAND_MARK_MINE, ref map, ref userX, ref userY, ref countMine, field, possibleMine);
+                        MarkMines(COMMAND_MARK_MINE, ref map, ref userX, ref userY, ref countMine, field, possibleMine);
                         break;
                     
                     case COMMAND_DETACH_MINE:
-                        MarksMine(COMMAND_DETACH_MINE, ref map, ref userX, ref userY, ref countMine, field, possibleMine);
+                        MarkMines(COMMAND_DETACH_MINE, ref map, ref userX, ref userY, ref countMine, field, possibleMine);
                         break;
                     
                     case COMMAND_OPEN_FIELD:
@@ -119,6 +117,7 @@ public class BraveNewWorld
             
             isRestart = Restart(ref userX, ref userY, ref isWin);
         }
+        
         static char[,] CreateMap(ref int x, ref int y, ref char border, ref char field)
         {
             char[,] map = new char[x, y];
@@ -131,7 +130,10 @@ public class BraveNewWorld
                     {
                         map[mapX, mapY] = border;
                     }
-                    else { map[mapX, mapY] = field; }
+                    else
+                    {
+                        map[mapX, mapY] = field;
+                    }
                 }
             }
             
@@ -202,56 +204,61 @@ public class BraveNewWorld
             return minefield;
         }
 
-        static void DrawLegend(ref int minefieldY, ref int mineQuantity)
+        static void DrawLegend(ref int minefieldY, ref int mineQuantity, ref int cursorShiftLeft, ref int countMine, ref int countWin)
         {
-            int cursorShiftLeft = 4;
+            int cursorShiftTop = 0;
             
             Console.Clear();
             
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 0);
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop);
             Console.WriteLine("Добро пожаловать в игру САПЕР!");
             
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 2);
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop++);
             Console.WriteLine($"На карте случайным образом размещены {mineQuantity} мин. Найдите их!");
             
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 4);
-            Console.WriteLine("Для перемещения курсора используйте клавиши UP, DOWN, LEFT, RIGHT.");
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop++);
+            Console.WriteLine($"Для перемещения курсора используйте клавиши {COMMAND_MOVE_UP}, {COMMAND_MOVE_DOWN}, {COMMAND_MOVE_LEFT}, {COMMAND_MOVE_RIGHT}.");
             
-            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 5);
-            Console.WriteLine("Для вскрытия поля - клавишу ENTER.");
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop++);
+            Console.WriteLine($"Для вскрытия поля - клавишу {COMMAND_OPEN_FIELD}.");
             
-            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 6);
-            Console.WriteLine("Для того чтобы выделить предполагаемое место нахождения бомбы - клавишу SPACE.");
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop++);
+            Console.WriteLine($"Для того чтобы выделить предполагаемое место нахождения бомбы - клавишу {COMMAND_MARK_MINE}.");
             
-            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 7);
-            Console.WriteLine("Для того чтобы спрятать выделение предполагаемого места нахождения бомбы - клавишу BACKSPACE.");
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop++);
+            Console.WriteLine($"Для того чтобы спрятать выделение предполагаемого места нахождения бомбы - клавишу {COMMAND_DETACH_MINE}.");
+            
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, cursorShiftTop++);
+            Console.WriteLine($"Найдено мин: {countMine}:   Счет: {countWin}");
             
             Console.ResetColor();
         }
 
         static void MovingUser(ConsoleKey key, ref char[,] map, ref int userX, ref int userY, char border)
         {
-            if (key == COMMAND_MOOVE_UP)
+            if (key == COMMAND_MOVE_UP)
                 if (map[userX - 1, userY] != border)
                     userX--;
             
-            if (key == COMMAND_MOOVE_DOWN)
+            if (key == COMMAND_MOVE_DOWN)
                 if (map[userX + 1, userY] != border)
                     userX++;
             
-            if (key == COMMAND_MOOVE_LEFT)
+            if (key == COMMAND_MOVE_LEFT)
                 if (map[userX, userY - 1] != border)
                     userY--;
             
-            if (key == COMMAND_MOOVE_RIGHT)
+            if (key == COMMAND_MOVE_RIGHT)
                 if (map[userX, userY + 1] != border)
                     userY++;
         }
 
-        static void MarksMine(ConsoleKey key, ref char[,] map, ref int userX, ref int userY, ref int countMine, char field, char possibleMine)
+        static void MarkMines(ConsoleKey key, ref char[,] map, ref int userX, ref int userY, ref int countMine, char field, char possibleMine)
         {
             if (key == COMMAND_MARK_MINE)
             {
@@ -273,7 +280,7 @@ public class BraveNewWorld
                 int[] stepAroundX = { -1, -1, -1, 0, 1, 1, 1, 0 };
                 int[] stepAroundY = { -1, 0, 1, 1, 1, 0, -1, -1 };
 
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < stepAroundX.Length; i++)
                 {
                     int newX = userX + stepAroundX[i];
                     int newY = userY + stepAroundY[i];
@@ -299,6 +306,7 @@ public class BraveNewWorld
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.SetCursorPosition(0, 0);
                 Console.WriteLine("!----------ВЫ ВЫГРАЛИ---------!");
+                Console.ReadKey();
             }
             else
             {
@@ -312,6 +320,7 @@ public class BraveNewWorld
                 Console.ReadKey();
             }
             
+            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Black;
             Console.Write("Хотите попробовать еще раз (Y/N)?");
             Console.ResetColor();
