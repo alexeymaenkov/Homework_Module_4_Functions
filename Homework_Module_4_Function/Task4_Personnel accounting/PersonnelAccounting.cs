@@ -133,11 +133,11 @@ public class PersonnelAccounting
         array = tempArray;
     }
 
-    static void RemoveLast(ref string[] array, int count)
+    static void RemoveLast(ref string[] array)
     {
-        string[] tempArray = new string[array.Length - count];
+        string[] tempArray = new string[array.Length - 1];
         
-        for (int i = 0; i < array.Length - count; i++)
+        for (int i = 0; i < array.Length - 1; i++)
         {
             tempArray[i] = array[i];
         }
@@ -190,9 +190,9 @@ public class PersonnelAccounting
             (job[deleteNumber], job[^1]) = (job[^1], job[deleteNumber]);
         }
 
-        RemoveLast(ref fullName, 1);
+        RemoveLast(ref fullName);
         
-        RemoveLast(ref job, 1);
+        RemoveLast(ref job);
         
         OutputSuccess("Сотрудник успешно удален!");
     }
