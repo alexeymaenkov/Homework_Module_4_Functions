@@ -49,18 +49,23 @@ public class PersonnelAccounting
                 case COMMAND_ADD_DOSSIER:
                     AddDossier(ref fullName, ref job);
                     break;
+                
                 case COMMAND_SHOW_ALL_DOSSIERS:
                     ShowAllDossiers(ref fullName, ref job);
                     break;
+                
                 case COMMAND_DELETE_DOSSIER:
                     DeleteDossier(ref fullName, ref job);
                     break;
+                
                 case COMMAND_FINDE_BY_SURNAME:
                     FindDossier(ref fullName);
                     break;
+                
                 case COMMAND_EXIT:
                     isWorking = false;
                     break;
+                
                 default:
                     OutputError("Ошибка ввода команды! Попробуйте еще раз:");
                     break;

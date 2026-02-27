@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace Homework_Module_4_Function.Task5_Brave_new_world;
 
 public class BraveNewWorld
@@ -26,21 +28,23 @@ public class BraveNewWorld
         
         int minefieldX = 10;
         int minefieldY = 10;
-        
         int mine = -1;
         int mineQuantity = 10;
+        int quantityFreeMinefieldСells = minefieldX * minefieldY - mineQuantity;
+        int mapX = minefieldX + 2;
+        int mapY = minefieldY + 2;
         
         char border = '#';
         char field = '*';
         char possibleMine = '?';
         
-        bool restart = true;
+        bool isRestart = true;
         
-        while (restart)
+        while (isRestart)
         {
             int[,] minefield = CreateMinefield(ref minefieldX, ref minefieldY, ref mine, ref mineQuantity, ref random);
             
-            char[,] map = GetMap(minefieldX + 2, minefieldY + 2, border, field);
+            char[,] map = CreateMap(ref mapX, ref mapY, ref border, ref field);
 
             DrawLegend(ref minefieldY, ref mineQuantity);
 
@@ -50,6 +54,7 @@ public class BraveNewWorld
             int countWin = 0;
 
             bool isWorking = true;
+            bool isWin = false;
 
             while (isWorking)
             {
@@ -61,9 +66,7 @@ public class BraveNewWorld
                 Console.ResetColor();
 
                 Console.SetCursorPosition(minefieldY + 4, 9);
-                Console.WriteLine($"Найдено МИН: {countMine}");
-                
-                int quantityFreeMinefieldСells = (minefieldX * minefieldY) - mineQuantity;
+                Console.WriteLine($"Найдено МИН: {countMine} + счет {countWin}");
                 
                 ConsoleKeyInfo charKey = Console.ReadKey();
                 
@@ -96,39 +99,27 @@ public class BraveNewWorld
                     case COMMAND_OPEN_FIELD:
                         if (map[userX, userY] == field)
                         {
-                            map[userX, userY] = minefield[userX - 1, userY - 1].ToString()[0];
-                            countWin++;
+                            OpenField(ref map, ref minefield, ref userX, ref userY, ref countWin, ref field);
+                            
+                            if (countWin == quantityFreeMinefieldСells)
+                            {
+                                isWorking = false;
+                                isWin = true;
+                            }
                         }
-                        if (countWin == quantityFreeMinefieldСells)
-                        {
-                            Console.SetCursorPosition(0, 0);
-                            Console.BackgroundColor = ConsoleColor.DarkGreen;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("!----------ВЫ ВЫГРАЛИ---------!");
-                            isWorking = false;
-                        }
+                        
                         if (minefield[userX - 1, userY - 1] == mine)
                         {
-                            map[userX, userY] = 'X';
-                            Console.BackgroundColor = ConsoleColor.Red;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.SetCursorPosition(userY, userX);
-                            Console.Write("X");
-                            Console.ResetColor();
-                            Console.SetCursorPosition(0, 0);
-                            Console.BackgroundColor = ConsoleColor.Red;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.WriteLine("!----------ВЫ ПРОИГАЛИ---------!");
-                            Console.ReadKey();
+                            isWin = false;
                             isWorking = false;
                         }
                         break;
                 }
             }
             
-            Restart(ref restart);
+            isRestart = Restart(ref userX, ref userY, ref isWin);
         }
-        static char[,] GetMap(int x, int y, char border, char field)
+        static char[,] CreateMap(ref int x, ref int y, ref char border, ref char field)
         {
             char[,] map = new char[x, y];
 
@@ -171,8 +162,8 @@ public class BraveNewWorld
             
             int[,] minefield = new int[minefieldX, minefieldY];
             
-            int[] aroundX = { -1, -1, -1, 0, 1, 1, 1, 0 };
-            int[] aroundY = { -1, 0, 1, 1, 1, 0, -1, -1 };
+            int[] stepAroundX = { -1, -1, -1, 0, 1, 1, 1, 0 };
+            int[] stepAroundY = { -1, 0, 1, 1, 1, 0, -1, -1 };
             
             for (int i = 0; i < mineQuantity; i++)
             {
@@ -192,8 +183,8 @@ public class BraveNewWorld
 
                     for (int i = 0; i < QUANTITY_STEPS_AROUND; i++)
                     {
-                        int newX = x + aroundX[i];
-                        int newY = y + aroundY[i];
+                        int newX = x + stepAroundX[i];
+                        int newY = y + stepAroundY[i];
 
                         if (newX >= 0 && newX < minefieldX && newY >= 0 && newY < minefieldY)
                         {
@@ -211,24 +202,33 @@ public class BraveNewWorld
             return minefield;
         }
 
-        static void DrawLegend(ref int battlefieldSizeY, ref int mineQuantity)
+        static void DrawLegend(ref int minefieldY, ref int mineQuantity)
         {
+            int cursorShiftLeft = 4;
+            
             Console.Clear();
-            Console.SetCursorPosition(battlefieldSizeY + 4, 0);
+            
             Console.ForegroundColor = ConsoleColor.Green;
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 0);
             Console.WriteLine("Добро пожаловать в игру САПЕР!");
-            Console.SetCursorPosition(battlefieldSizeY + 4, 2);
+            
             Console.ForegroundColor = ConsoleColor.Red;
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 2);
             Console.WriteLine($"На карте случайным образом размещены {mineQuantity} мин. Найдите их!");
-            Console.SetCursorPosition(battlefieldSizeY + 4, 4);
+            
             Console.ForegroundColor = ConsoleColor.Blue;
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 4);
             Console.WriteLine("Для перемещения курсора используйте клавиши UP, DOWN, LEFT, RIGHT.");
-            Console.SetCursorPosition(battlefieldSizeY + 4, 5);
+            
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 5);
             Console.WriteLine("Для вскрытия поля - клавишу ENTER.");
-            Console.SetCursorPosition(battlefieldSizeY + 4, 6);
+            
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 6);
             Console.WriteLine("Для того чтобы выделить предполагаемое место нахождения бомбы - клавишу SPACE.");
-            Console.SetCursorPosition(battlefieldSizeY + 4, 7);
+            
+            Console.SetCursorPosition(minefieldY + cursorShiftLeft, 7);
             Console.WriteLine("Для того чтобы спрятать выделение предполагаемого места нахождения бомбы - клавишу BACKSPACE.");
+            
             Console.ResetColor();
         }
 
@@ -266,29 +266,72 @@ public class BraveNewWorld
             }
         }
         
-        static void Restart(ref bool restart)
+        static void OpenField(ref char[,] map, ref int[,] minefield, ref int userX, ref int userY, ref int countWin, ref char field)
         {
+            if (minefield[userX - 1, userY - 1] == 0)
+            {
+                int[] stepAroundX = { -1, -1, -1, 0, 1, 1, 1, 0 };
+                int[] stepAroundY = { -1, 0, 1, 1, 1, 0, -1, -1 };
+
+                for (int i = 0; i < 8; i++)
+                {
+                    int newX = userX + stepAroundX[i];
+                    int newY = userY + stepAroundY[i];
+
+                    if (map[newX, newY] == field)
+                    {
+                        map[newX, newY] = minefield[newX - 1, newY - 1].ToString()[0];
+                        countWin++;
+                    }
+                }
+            }
+            
+            map[userX, userY] = minefield[userX - 1, userY - 1].ToString()[0];
+            
+            countWin++;
+        }
+        
+        static bool Restart(ref int userX, ref int userY,  ref bool isWin)
+        {
+            if (isWin)
+            {
+                Console.BackgroundColor = ConsoleColor.DarkGreen;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(0, 0);
+                Console.WriteLine("!----------ВЫ ВЫГРАЛИ---------!");
+            }
+            else
+            {
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(userY, userX);
+                Console.Write("X");
+            
+                Console.SetCursorPosition(0, 0);
+                Console.WriteLine("!----------ВЫ ПРОИГАЛИ---------!");
+                Console.ReadKey();
+            }
+            
             Console.ForegroundColor = ConsoleColor.Black;
             Console.Write("Хотите попробовать еще раз (Y/N)?");
             Console.ResetColor();
+            
             ConsoleKeyInfo charKey = Console.ReadKey();
             
             switch (charKey.Key)
             {
                 case COMMAND_RESTART:
-                    restart = true;
-                    break;
+                    return true;
 
                 case COMMAND_EXIT:
                     Console.Clear();
-                    restart = false;
-                    break;
+                    return false;
                 
                 default:
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.Write("Нажмите Y или N!");
                     Console.ResetColor();
-                    break;
+                    return true;
             }
         }
     }
